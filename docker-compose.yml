@@ -1,0 +1,104 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: fastapi
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db  # Override for backend service
+      - MINIO_HOST=minio  # Add this line
+      - MINIO_PORT=9000   # Add this line
+      - S3_URL=http://minio:9000  # Add this line
+    depends_on:
+      - minio
+      - db
+    networks:
+      - ipa-scout-network
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - BACKEND_HOST=http://fastapi:8080
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - ipa-scout-network
+    volumes:
+      - ./frontend:/app
+  minio:
+    image: minio/minio
+    expose:
+      - "${MINIO_PORT}"
+      - "9001"
+    ports:
+      - "${MINIO_PORT}:${MINIO_PORT}"
+      - "9001:9001"
+    environment:
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+    command: server --console-address ":9001" /data
+    networks:
+      - ipa-scout-network
+    volumes:
+      - ./data/objectstore:/data
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: insecure # pragma: allowlist secret
+      POSTGRES_DB: ipa-scout
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data:Z
+    networks:
+      - ipa-scout-network
+    ports:
+      - "5432:5432"
+
+  libreoffice:
+    build:
+      context: ./libreoffice_service
+      dockerfile: Dockerfile
+    container_name: libreoffice_service
+    security_opt:
+      - seccomp:unconfined #optional
+    env_file:
+      - .env
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - S3_ENDPOINT=http://minio:9000
+    volumes:
+      - ./libreoffice_service/:/app
+      - ./libreoffice_service/data:/data
+      - ./libreoffice_service/config:/config
+      - ./libreoffice_service/data:/documents
+    ports:
+      - 3003:3000 # LibreOffice web interface
+      - 3004:3001 # LibreOffice web interface
+      - 5000:5000 # FastAPI
+    restart: unless-stopped
+    networks:
+      - ipa-scout-network
+
+networks:
+  ipa-scout-network:
+    driver: bridge
+
+volumes:
+  local_postgres_data: { }
+  shared_volume: { }

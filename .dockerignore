@@ -1,0 +1,6 @@
+.data
+.dump
+
+.venv*
+
+node_modules/

@@ -1,0 +1,54 @@
+.file-viewer {
+  display: flex;
+  height: 100vh;
+}
+
+.file-list {
+  width: 250px;
+  padding: 20px;
+  background-color: #f0f0f0;
+  overflow-y: auto;
+}
+
+.file-list h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.file-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.file-list li {
+  margin-bottom: 10px;
+}
+
+.file-list button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: background-color 0.2s;
+}
+
+.file-list button:hover {
+  background-color: #e0e0e0;
+}
+
+.document-viewer {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.no-file-selected {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 18px;
+  color: #888;
+}

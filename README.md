@@ -17,8 +17,8 @@ Note that you will need Docker and Python installed on your laptop.
 
 Clone the repo.
 ```
-git clone git@github.com:i-dot-ai/ipa-scout.git
-cd ipa-scout
+git clone git@github.com:i-dot-ai/scout.git
+cd scout
 ```
 Make sure you have [poetry installed](https://python-poetry.org/docs/) for dependency management.
 

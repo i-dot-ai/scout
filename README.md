@@ -24,7 +24,7 @@ Make sure you have [poetry installed](https://python-poetry.org/docs/) for depen
 
 Install packages: 
 ```
-poetry install --with-dev
+poetry install --with dev
 ```
 
 Set up pre-commit for linting, checking for secrets etc:

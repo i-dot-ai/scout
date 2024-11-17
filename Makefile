@@ -4,9 +4,6 @@ export
 # Setting up your python environment - 3.12.2
 PYTHON_VERSION=3.12.2
 
-test:
-	poetry install --with dev && poetry run python -m pytest tests --cov=backend -v --cov-report=term-missing --cov-fail-under=0
-
 alembic-upgrade:
 	alembic upgrade head
 

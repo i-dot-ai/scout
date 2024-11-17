@@ -16,47 +16,47 @@ For more detailed documentation, see the `docs` folder. There are also example s
 Note that you will need Docker and Python installed on your laptop.
 
 Clone the repo.
-```bash
-$ git clone git@github.com:i-dot-ai/ipa-scout.git
-$ cd ipa-scout
+```
+git clone git@github.com:i-dot-ai/ipa-scout.git
+cd ipa-scout
 ```
 Make sure you have [poetry installed](https://python-poetry.org/docs/) for dependency management.
 
 Install packages: 
-```bash
-$ poetry install --with-dev
+```
+poetry install --with-dev
 ```
 
 Set up pre-commit for linting, checking for secrets etc:
-```bash
-$ pre-commit install
+```
+pre-commit install
 ```
 
 Copy over the example env file to your `.env` (not to be committed):
-```bash
-$ cp .env.example .env
+```
+cp .env.example .env
 ```
 
 Install `nltk` data:
-```bash
-$ poetry run python -c "import nltk; nltk.download('punkt_tab');nltk.download('averaged_perceptron_tagger_eng');nltk.download('averaged_perceptron_tagger_eng')"
+```
+poetry run python -c "import nltk; nltk.download('punkt_tab');nltk.download('averaged_perceptron_tagger_eng');nltk.download('averaged_perceptron_tagger_eng')"
 ```
 
 Copy the `.env` file and add your environment variables e.g. API keys:
-```bash
-$ cp .env.example .env
+```
+cp .env.example .env
 ```
 
 You may need to install `poppler` (this is a reqirement for the `pdf2image` Python library): 
-```bash
-$ brew install poppler
+```
+brew install poppler
 ```
 (assuming you are using a Mac with Homebrew).
 
 Run using:
-```bash
-$ docker compose build
-$ docker compose up
+```
+docker compose build
+docker compose up
 ```
 
 In your browser see the app at: 
@@ -74,9 +74,9 @@ You can manually reset your database using `make reset-local-db` (when you have 
 The pipeline to evaluate projects runs outside the app.
 
 Make a `.data` directory in the root of the project: 
-```bash
-$ mkdir .data
-$ cd .data
+```
+mkdir .data
+cd .data
 ```
 Don't commit this to git, it is in the `.gitignore`.
 

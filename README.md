@@ -59,6 +59,11 @@ docker compose build
 docker compose up
 ```
 
+You will also need to run migrations (more detail on database below):
+```
+poetry run alembic upgrade head
+```
+
 In your browser see the app at: 
 ```
 http://localhost:3000

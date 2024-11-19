@@ -130,6 +130,19 @@ Distinct modules for data analysis should have their own folders in the scout pa
 
 Each module should have a corresponding script in the `scripts` folder that runs a pipeline that uses that module.
 
+
+# Troubleshooting
+
+If you have issues on `docker compose build` with permissions, for example:
+```
+Error response from daemon: error while creating mount source path '/Users/<username>/scout/data/objectstore'
+```
+You can update the permissions using:
+```
+chmod 755 /Users/<username>/scout/libreoffice_service/config
+```
+
+
 # Tests
 
 **Note** these tests will generate data in your local database and Minio (local S3), and will generate a vector store in your example data folder.

@@ -76,7 +76,7 @@ http://localhost:3000
 
 There won't be any data in the app yet - you will have to run the pipeline to analyse project data and populate the database. 
 
-You can manually reset your database using `make reset-local-db` (when you have your database running).
+You can manually reset your database using `make reset-local-db` (when you have your database running). For this to work, you will need postgres installed locally (with a Mac: `brew install postgres` or `brew install postgres@13` or whichever version you want).
 
 
 # Running the analysis pipeline
@@ -133,6 +133,7 @@ Each module should have a corresponding script in the `scripts` folder that runs
 
 # Troubleshooting
 
+## Docker issues
 If you have issues on `docker compose build` with permissions, for example:
 ```
 Error response from daemon: error while creating mount source path '/Users/<username>/scout/data/objectstore'
@@ -142,6 +143,16 @@ You can update the permissions using:
 ```
 chmod 755 /Users/<username>/scout/libreoffice_service/config
 ```
+
+## `make reset-local-db`
+
+This command resets your local database (make sure you have it running in Docker: `docker compose up db`).
+
+Make sure you have psql installed through brew `brew install postgresql`. 
+
+The local postgresql service needs to be stopped before running this `make` command: `brew services stop postgresql`.
+
+If the db/tables can't be found, check that you've run `poetry run alembic upgrade head` (or `make alembic-upgrade`) and that the `db` container is running.
 
 
 # Tests

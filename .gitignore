@@ -1,5 +1,6 @@
 .venv*
 .env
+.pyenv
 .vscode
 .idea
 *.pptx

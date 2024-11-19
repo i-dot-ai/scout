@@ -63,6 +63,11 @@ You will also need to run migrations (more detail on database below):
 ```
 poetry run alembic upgrade head
 ```
+or 
+```
+make alembic-upgrade
+```
+(depends how you set-up alembic).
 
 In your browser see the app at: 
 ```
@@ -151,6 +156,8 @@ The other test files contain unit tests.
 - `poetry run pytest tests/test_create_db.py` (can be run without resetting DB)
 
 The tests should be run from the root folder.
+
+You can reset your local database after running tests with `make reset-local-db`.
 
 Changing the document count or contents will cause the tests to fail.
 

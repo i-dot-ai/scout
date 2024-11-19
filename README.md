@@ -137,6 +137,7 @@ If you have issues on `docker compose build` with permissions, for example:
 ```
 Error response from daemon: error while creating mount source path '/Users/<username>/scout/data/objectstore'
 ```
+
 You can update the permissions using:
 ```
 chmod 755 /Users/<username>/scout/libreoffice_service/config

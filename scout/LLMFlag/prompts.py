@@ -161,16 +161,37 @@ Only return the hypotheses, do not return any other information.
 
 
 #
-# For section summaries
+# For summaries
 #
-_summarise_core_prompt = """
-You are an an expert project delivery adviser from the UK Government's Infrastructure and Projects Authority. \
-You are given a list of questions that flag problems related to a project. \
-Return a summary of the overall themes the questions are trying uncover. \
-The summary must be at most 3 sentences long. \
-Questions:
-{questions}
+
+_summarise_core_prompt  = """
+<start of task>
+You will be given question and answer pairs about a government project. Return a summary of the most important themes and some lines of enquiry.
+<end of task>
+<start of rules>
+You do not need to summarise all the questions, only return important, specific information.
+Be specific about project detail referred to.
+Return no more than 5 sentences.
+Recommend at most 3 lines of enquiry at the end, and explicitly call them a suggested lines of enquiry.
+Lines of enquiry are points to investigate further in interviews with the project team.
+To form your lines of lines of enquiry, use the hypotheses formed during the investigation.
+Use simple html text formatting tags, <strong> and <br /> for bold and line breaks between items and sections of your response.
+There must be a line break before the suggested lines of enquiry section.
+Do not use Markdown formatting.
+Do not use any extra formatting for font type size or color or anything else.
+Do not include a title in your answer.
+<end of rules>
+<start of hypotheses>
+{hypotheses}
+<end of hypotheses>
+<start of question and answer paris>
+{qa_pairs}
+<end of question and answer paris>
 """
+
+SUMMARIZE_RESPONSES_PROMPT=CORE_SCOUT_PERSONA+_summarise_core_prompt
+
+
 
 SUMMARISE_OUTPUTS_PROMPT = PromptTemplate.from_template(_summarise_core_prompt)
 
@@ -188,3 +209,4 @@ Published date: {date}
 Extract:{text}
 =======
 """
+

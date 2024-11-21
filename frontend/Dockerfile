@@ -4,7 +4,7 @@ FROM node:20
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the rest of the application code to the working directory
+# Copy the application code to the working directory
 COPY frontend/ ./
 
 # Install the application dependencies

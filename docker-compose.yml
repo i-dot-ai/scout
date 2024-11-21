@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   backend:
     build:
@@ -37,6 +36,9 @@ services:
       - ipa-scout-network
     volumes:
       - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+
   minio:
     image: minio/minio
     expose:

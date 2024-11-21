@@ -16,48 +16,53 @@ For more detailed documentation, see the `docs` folder. There are also example s
 Note that you will need Docker and Python installed on your laptop.
 
 Clone the repo.
-```bash
-$ git clone git@github.com:i-dot-ai/ipa-scout.git
-$ cd ipa-scout
+```
+git clone git@github.com:i-dot-ai/scout.git
+cd scout
 ```
 Make sure you have [poetry installed](https://python-poetry.org/docs/) for dependency management.
 
 Install packages: 
-```bash
-$ poetry install --with-dev
+```
+poetry install --with dev
 ```
 
 Set up pre-commit for linting, checking for secrets etc:
-```bash
-$ pre-commit install
 ```
-
-Copy over the example env file to your `.env` (not to be committed):
-```bash
-$ cp .env.example .env
+pre-commit install
 ```
 
 Install `nltk` data:
-```bash
-$ poetry run python -c "import nltk; nltk.download('punkt_tab');nltk.download('averaged_perceptron_tagger_eng');nltk.download('averaged_perceptron_tagger_eng')"
+```
+poetry run python -c "import nltk; nltk.download('punkt_tab');nltk.download('averaged_perceptron_tagger_eng');nltk.download('averaged_perceptron_tagger_eng')"
 ```
 
 Copy the `.env` file and add your environment variables e.g. API keys:
-```bash
-$ cp .env.example .env
+```
+cp .env.example .env
 ```
 
 You may need to install `poppler` (this is a reqirement for the `pdf2image` Python library): 
-```bash
-$ brew install poppler
+```
+brew install poppler
 ```
 (assuming you are using a Mac with Homebrew).
 
 Run using:
-```bash
-$ docker compose build
-$ docker compose up
 ```
+docker compose build
+docker compose up
+```
+
+You will also need to run migrations (more detail on database below):
+```
+poetry run alembic upgrade head
+```
+or 
+```
+make alembic-upgrade
+```
+(depends how you set-up alembic).
 
 In your browser see the app at: 
 ```
@@ -66,7 +71,7 @@ http://localhost:3000
 
 There won't be any data in the app yet - you will have to run the pipeline to analyse project data and populate the database. 
 
-You can manually reset your database using `make reset-local-db` (when you have your database running).
+You can manually reset your database using `make reset-local-db` (when you have your database running). For this to work, you will need postgres installed locally (with a Mac: `brew install postgres` or `brew install postgres@13` or whichever version you want).
 
 
 # Running the analysis pipeline
@@ -74,9 +79,9 @@ You can manually reset your database using `make reset-local-db` (when you have 
 The pipeline to evaluate projects runs outside the app.
 
 Make a `.data` directory in the root of the project: 
-```bash
-$ mkdir .data
-$ cd .data
+```
+mkdir .data
+cd .data
 ```
 Don't commit this to git, it is in the `.gitignore`.
 
@@ -120,6 +125,31 @@ Distinct modules for data analysis should have their own folders in the scout pa
 
 Each module should have a corresponding script in the `scripts` folder that runs a pipeline that uses that module.
 
+
+# Troubleshooting
+
+## Docker issues
+If you have issues on `docker compose build` with permissions, for example:
+```
+Error response from daemon: error while creating mount source path '/Users/<username>/scout/data/objectstore'
+```
+
+You can update the permissions using:
+```
+chmod 755 /Users/<username>/scout/libreoffice_service/config
+```
+
+## `make reset-local-db`
+
+This command resets your local database (make sure you have it running in Docker: `docker compose up db`).
+
+Make sure you have psql installed through brew `brew install postgresql`. 
+
+The local postgresql service needs to be stopped before running this `make` command: `brew services stop postgresql`.
+
+If the db/tables can't be found, check that you've run `poetry run alembic upgrade head` (or `make alembic-upgrade`) and that the `db` container is running.
+
+
 # Tests
 
 **Note** these tests will generate data in your local database and Minio (local S3), and will generate a vector store in your example data folder.
@@ -146,6 +176,8 @@ The other test files contain unit tests.
 - `poetry run pytest tests/test_create_db.py` (can be run without resetting DB)
 
 The tests should be run from the root folder.
+
+You can reset your local database after running tests with `make reset-local-db`.
 
 Changing the document count or contents will cause the tests to fail.
 

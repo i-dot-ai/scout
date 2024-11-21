@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: ./backend/Dockerfile
-    container_name: fastapi
+    container_name: fastapi_scout
     ports:
       - "8080:8080"
     env_file:
@@ -29,7 +29,7 @@ services:
     env_file:
       - .env
     environment:
-      - BACKEND_HOST=http://fastapi:8080
+      - BACKEND_HOST=http://fastapi_scout:8080
     depends_on:
       - backend
     restart: always

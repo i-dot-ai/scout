@@ -26,6 +26,7 @@ Install dependencies and copy .env file:
 ```
 make setup
 ```
+This make command assumes you are using a Mac with Homebrew.
 
 Run using:
 ```

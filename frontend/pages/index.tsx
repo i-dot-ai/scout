@@ -1,9 +1,9 @@
-"use client"; // This is a client component
+"use client";
 
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import PieChart from '../components/PieChart';
 import { getGateUrl } from '../utils/getGateUrl';
-import { fetchUser, fetchReadItemsByAttribute, fetchItems } from '../utils/api'
+import { fetchUser, fetchReadItemsByAttribute, fetchItems } from '../utils/api';
 
 interface Result {
     answer: string;
@@ -21,6 +21,18 @@ interface Criterion {
     gate: string;
 }
 
+// Map of gate identifiers to their human-readable format
+const gateMap: { [key: string]: string } = {
+    'GATE_0': 'Gate 0',
+    'GATE_1': 'Gate 1',
+    'GATE_2': 'Gate 2',
+    'GATE_3': 'Gate 3',
+    'GATE_4': 'Gate 4',
+    'GATE_5': 'Gate 5'
+};
+
+const getBaseName = (name: string): string => name.split('-')[0];
+
 const Summary: React.FC = () => {
     const [chartData, setChartData] = useState<number[]>([]);
     const [chartLabels, setChartLabels] = useState<string[]>([]);
@@ -28,6 +40,7 @@ const Summary: React.FC = () => {
     const [gateUrl, setGateUrl] = useState<string | null>(null);
     const [categories, setCategories] = useState<{ [key: string]: number }>({});
     const [projectDetails, setProjectDetails] = useState<any>(null);
+    const [reviewType, setReviewType] = useState<string>('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -44,6 +57,15 @@ const Summary: React.FC = () => {
                 };
 
                 const criteria = await Promise.all(results.map(fetchCriteria));
+                
+                // Calculate review type based on unique gates
+                const uniqueGates = new Set(criteria.map(criterion => criterion.gate));
+                const formattedGates = Array.from(uniqueGates)
+                    .map(gate => gateMap[gate] || gate)
+                    .sort()
+                    .join(', ');
+                setReviewType(formattedGates);
+
                 const fetchedCategories = criteria.map(criterion => criterion.category);
                 console.log('Criterion fetched:', fetchedCategories);
 
@@ -88,21 +110,16 @@ const Summary: React.FC = () => {
                 <br />
                 <div className="summary-card" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', marginTop: '40px' }}>
                     <div style={{ flex: 1 }}>
-                        <h2>Welcome to <strong>Scout!</strong></h2>
                         <p>
-                            {gateUrl && (
-                                <>
-                                    This AI tool helps you navigate your document set before your review. Please check the details below are correct before continuing
-                                    <ul>
-                                        <strong>Review Type:</strong> {projectDetails.review_type} <br />
-                                        <strong>Project Name:</strong> {projectDetails.name}
-                                    </ul>
-                                    This tool has preprocessed your documents and analysed them against the questions in the
-                                    <a href={gateUrl} target="_blank" rel="noopener noreferrer">
-                                        {projectDetails.review_type} workbook
-                                    </a>.
-                                </>
-                            )}
+                            Scout helps you navigate your document set before your review. Please check the details below are correct before continuing.
+                            <ul>
+                                <strong>Review Type:</strong> {reviewType} <br />
+                                <strong>Project Name:</strong> {projectDetails.name ? getBaseName(projectDetails.name) : projectDetails.name}
+                            </ul>
+                            This tool has preprocessed your documents and analysed them against the questions in the 
+                            <a href={gateUrl} target="_blank" rel="noopener noreferrer">
+                                {reviewType} workbook
+                            </a>.
                         </p>
                     </div>
                 </div>

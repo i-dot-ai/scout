@@ -142,37 +142,67 @@ class S3StorageHandler(BaseStorageHandler):
         for item_uuid in item_uuids:
             self.delete_item(item_uuid, project_name)
 
-    def list_all_items(self, project_name: str, keep_file_extension: bool = False):
+    def list_all_items(self, project_name: str, keep_file_extension: bool = False, recursive: bool = True):
         """List all objects of a given type from a data store"""
         try:
             response = self.s3_client.list_objects_v2(
                 Bucket=self.bucket_name,
                 Prefix=self._add_prefix(f"{project_name}"),
-                # Bucket=self.bucket_name, Prefix=self.prefix
             )
-            if "Contents" in response:
-                if keep_file_extension:
-                    return [item["Key"].split("/")[-1] for item in response["Contents"]]
-                else:
-                    return [item["Key"].split("/")[-1].split(".")[0] for item in response["Contents"]]
-            else:
+            
+            if "Contents" not in response:
                 return []
+                
+            items = []
+            for item in response["Contents"]:
+                key = item["Key"]
+                # Skip if it's a directory marker (ends with /)
+                if key.endswith('/'):
+                    continue
+                    
+                if recursive:
+                    # For recursive listing, keep the full path after project_name
+                    relative_path = key.split(project_name, 1)[1] if project_name in key else key
+                    if keep_file_extension:
+                        items.append(relative_path)
+                    else:
+                        # Remove extension but keep path structure
+                        path_parts = relative_path.rsplit('.', 1)
+                        items.append(path_parts[0])
+                else:
+                    # Non-recursive - only include files in the immediate directory
+                    if '/' in key.split(project_name, 1)[1]:
+                        continue
+                    if keep_file_extension:
+                        items.append(key.split("/")[-1])
+                    else:
+                        items.append(key.split("/")[-1].split(".")[0])
+                        
+            return items
+            
         except (NoCredentialsError, PartialCredentialsError) as e:
             print(f"Credentials error: {e}")
         except Exception as e:
             print(f"Error listing items: {e}")
 
-    def list_all_items_with_full_path(self, project_name: str = "test-data/raw/"):
+    def list_all_items_with_full_path(self, project_name: str = "test-data/raw/", recursive: bool = True):
         """lists all items in a given dir with full path appended"""
-        return [project_name + item for item in self.list_all_items(project_name, keep_file_extension=True)]
+        return [project_name + item for item in self.list_all_items(project_name, keep_file_extension=True, recursive=recursive)]
 
-    def presigned_url_list(self, project_name: str):
-        """List all presigned urls for a given project"""
+    def presigned_url_list(self, project_name: str, recursive: bool = True):
+        """
+        List all presigned urls for a given project
+        
+        Args:
+            project_name: The project directory to list files from
+            recursive: If True, include files from subdirectories
+        
+        Returns:
+            List of presigned URLs for all matching files
+        """
+        full_paths = self.list_all_items_with_full_path(project_name, recursive=recursive)
+        return [self.get_pre_signed_url(key) for key in full_paths]
 
-        return [
-            self.get_pre_signed_url(project_name + key)
-            for key in self.list_all_items(project_name, keep_file_extension=True)
-        ]
 
     def read_all_items(self, project_name: str):
         """Read all objects of a given type from a data store"""

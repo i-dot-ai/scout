@@ -22,31 +22,10 @@ cd scout
 ```
 Make sure you have [poetry installed](https://python-poetry.org/docs/) for dependency management.
 
-Install packages: 
+Install dependencies and copy .env file: 
 ```
-poetry install --with dev
+make setup
 ```
-
-Set up pre-commit for linting, checking for secrets etc:
-```
-pre-commit install
-```
-
-Install `nltk` data:
-```
-poetry run python -c "import nltk; nltk.download('punkt_tab');nltk.download('averaged_perceptron_tagger_eng');nltk.download('averaged_perceptron_tagger_eng')"
-```
-
-Copy the `.env` file and add your environment variables e.g. API keys:
-```
-cp .env.example .env
-```
-
-You may need to install `poppler` (this is a reqirement for the `pdf2image` Python library): 
-```
-brew install poppler
-```
-(assuming you are using a Mac with Homebrew).
 
 Run using:
 ```

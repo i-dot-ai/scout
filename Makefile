@@ -3,6 +3,19 @@ export
 
 # Setting up your python environment - 3.12.2
 PYTHON_VERSION=3.12.2
+PYTHON = poetry run python
+
+install: ## Install all dependencies including dev packages
+	poetry install --with dev
+	poetry run pre-commit install
+	
+
+setup: install ## Complete setup including pre-commit hooks and NLTK data
+	$(PYTHON) -c "import nltk; nltk.download('punkt_tab'); nltk.download('averaged_perceptron_tagger_eng')"
+	brew install poppler
+	test -f .env || cp .env.example .env
+	@echo "Don't forget to update your .env file with your API keys!"
+	
 
 alembic-upgrade:
 	alembic upgrade head

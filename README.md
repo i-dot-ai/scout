@@ -75,7 +75,7 @@ You may wish to use the example data in the `example_data` folder - this contain
 3. Make sure Python packages are installed: `poetry install`.
 4. Make sure your database, minio and libreoffice services are running: `docker compose up db minio libreoffice`.
 5. In the script, change your `project_directory_name`, `gate_review`, and `llm` to reflect your project (if you are using the example data, you won't need to change anything).
-6. Run the script (outside Docker): `poetry run python scripts/analyse_project.py` (this takes a few minutes with the example data).
+6. Run the script (outside Docker): `poetry run python scripts/analyse_project.py` (this takes a few minutes with the example data). The first time you run this script it will download an ML model used to process documents, this makes the first run particularly slow.
 7. View your results in the frontend - run the app in Docker `docker compose up` and go to http://localhost:3000.
 
 More detailed documentation can be found in `docs/analyse_projects.md`.

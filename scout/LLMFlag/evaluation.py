@@ -8,7 +8,7 @@ from langchain_core.vectorstores import VectorStore
 from openai import APIConnectionError, APIError, OpenAI, RateLimitError
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
-from scout.DataIngest.models.schemas import Chunk, CriterionCreate, File, ProjectCreate, ResultCreate
+from scout.DataIngest.models.schemas import Chunk, CriterionCreate, File, ProjectCreate,ProjectUpdate, ResultCreate
 from scout.LLMFlag.prompts import (
     CORE_SCOUT_PERSONA,
     DOCUMENT_EXTRACT_PROMPT,
@@ -237,8 +237,8 @@ class MainEvaluator(BaseEvaluator):
         logger.info("Generating summary of answers...")
         # Generate summary of answers
         summary = self.generate_summary(question_answer_pairs)
-        self.project.results_summary = summary
-        self.storage_handler.update_item(self.project)
+        project_update=ProjectUpdate(id=self.project.id,name=self.project.name, results_summary=summary)
+        self.storage_handler.update_item(project_update)
         return results
 
     def generate_summary(self, question_answer_pairs: List[tuple]) -> str:

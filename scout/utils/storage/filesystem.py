@@ -20,6 +20,19 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+
+class TypeAdapter:
+    def __init__(self, model):
+        self.model = model
+
+    def validate_python(self, data):
+        try:
+            return self.model(**data)
+        except ValidationError as e:
+            print(f"Validation error: {e}")
+            return None
+
+
 class S3StorageHandler(BaseStorageHandler):
     def __init__(
         self,
@@ -49,11 +62,11 @@ class S3StorageHandler(BaseStorageHandler):
             # Create the bucket if it doesn't exist
             try:
                 self.s3_client.create_bucket(Bucket=self.bucket_name)
-                logger.info(f"Successfully created bucket: {self.bucket_name}")
+                print(f"Successfully created bucket: {self.bucket_name}")
             except self.s3_client.exceptions.BucketAlreadyOwnedByYou:
-                logger.info(f"Bucket {self.bucket_name} already exists and is owned by you.")
+                print(f"Bucket {self.bucket_name} already exists and is owned by you.")
             except Exception as e:
-                logger.error(f"Error creating bucket: {e}")
+                print(f"Error creating bucket: {e}")
         else:
             # Use no authentication for production mode
             logger.info("Connecting to S3...")

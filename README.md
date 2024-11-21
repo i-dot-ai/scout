@@ -1,8 +1,8 @@
 #  🔍 IPA scout
 
-> ⚠️ Incubation Project: This project is an incubation project; as such, we DON’T recommend using it in any critical use case. This project is in active development and a work in progress. 
-
-Scout automatically analyses new project documents w.r.t to IPA guidance and gate workbooks, flagging potential problems as soon as possible. This tool improves and expedites the work of assurance review teams.
+> ⚠️ Incubation Project: This project is an incubation project; as such, we encourage teams to evaluate its performance before applying it to their assurance process.
+> 
+Scout automatically analyses new project documents with respect to IPA guidance and gate workbooks, flagging potential problems as soon as possible. This tool improves and expedites the work of assurance review teams.
 
 There is a pipeline that ingests project documents, criteria, then uses an LLM to evaluate projects against the criteria. The project data, criteria and evaluation results are saved in a database. There is then an app that allows users to explore this data and identify potential issues with projects.
 

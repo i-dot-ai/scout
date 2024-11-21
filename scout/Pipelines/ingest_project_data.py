@@ -111,7 +111,7 @@ def ingest_project_files(
     # Upload files to s3
     s3_file_keys = s3_storage_handler.upload_folder_contents(
         str(project_folder_path),
-        recursive=False,
+        recursive=True,
         prefix=sanitise_project_name(project.name) + "/raw/",
     )
     logger.info(f"Uploaded {s3_file_keys} files to s3")

@@ -39,27 +39,42 @@ class HealthResponse(BaseModel):
     status: bool
 
 
-def transform_file_path(input_path: str) -> str:
-    # Split the path into directory and filename
-    directory, filename = os.path.split(input_path)
-
-    # Split the directory into parts
-    dir_parts = directory.split(os.sep)
-
-    # Remove the last directory and replace it with "processed"
-    if len(dir_parts) > 1:
-        dir_parts[-1] = "processed"
-    else:
-        dir_parts.append("processed")
-
-    # Join the directory parts back together
-    new_directory = os.sep.join(dir_parts)
-
-    # Get the filename without extension and add .pdf
-    new_filename = os.path.splitext(filename)[0] + ".pdf"
-
-    # Join the new directory and filename
-    return os.path.join(new_directory, new_filename)
+def transform_file_path(input_path):
+    """
+    Transform a file path by replacing 'raw' directory with 'processed' and changing extension to .pdf
+    while maintaining the rest of the directory structure.
+    
+    Args:
+        input_path (str): Original file path (e.g., 'project/raw/subfolder/file.docx')
+        
+    Returns:
+        str: Transformed file path (e.g., 'project/processed/subfolder/file.pdf')
+        
+    Example:
+        >>> transform_file_path('example_project/raw/test_folder/document.docx')
+        'example_project/processed/test_folder/document.pdf'
+    """
+    # Normalize path separators for the current OS
+    input_path = os.path.normpath(input_path)
+    
+    # Split the path into parts
+    parts = input_path.split(os.sep)
+    
+    # Find the 'raw' directory index
+    try:
+        raw_index = parts.index('raw')
+    except ValueError:
+        raise ValueError("Input path must contain a 'raw' directory")
+    
+    # Replace 'raw' with 'processed'
+    parts[raw_index] = 'processed'
+    
+    # Get the filename and change extension to .pdf
+    filename = os.path.splitext(parts[-1])[0] + '.pdf'
+    parts[-1] = filename
+    
+    # Join all parts back together
+    return os.sep.join(parts)
 
 
 @app.get("/health")

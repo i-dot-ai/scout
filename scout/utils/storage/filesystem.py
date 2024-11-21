@@ -217,14 +217,29 @@ class S3StorageHandler(BaseStorageHandler):
         allowed_extensions: List[str] = ["pdf", "docx", "doc", "txt", "pptx", "ppt"],
     ) -> List[str]:
         # This assumes no duplicate file names in the folder
+             
+        if not os.path.isdir(folder_path):
+            # If it's a file, check if it has an allowed extension
+            file_name = os.path.basename(folder_path)
+            if file_name.split(".")[-1].lower() in allowed_extensions:
+                self.write_item(folder_path, key=prefix + file_name)
+                return [prefix + file_name]
+            return []
+
+        # If we get here, we know it's a directory
         output_keys = []
-        for file_path in os.listdir(folder_path):
-            if file_path.split(".")[-1] in allowed_extensions:
-                self.write_item(folder_path + "/" + file_path, key=prefix + file_path)
-                output_keys.append(prefix + file_path)
-        if recursive:
-            for subfolder in os.listdir(folder_path):
-                output_keys.extend(
-                    self.upload_folder_contents(os.path.join(folder_path, subfolder), recursive=True, prefix=prefix)
+        for file_name in os.listdir(folder_path):
+            full_path = os.path.join(folder_path, file_name)
+            if os.path.isfile(full_path):
+                if file_name.split(".")[-1].lower() in allowed_extensions:
+                    self.write_item(full_path, key=prefix + file_name)
+                    output_keys.append(prefix + file_name)
+            elif recursive and os.path.isdir(full_path):
+                # For directories, recursively call with the same prefix
+                sub_keys = self.upload_folder_contents(
+                    full_path,
+                    recursive=True,
+                    prefix=prefix + os.path.basename(full_path) + "/",  # Add subfolder to prefix
                 )
+                output_keys.extend(sub_keys)
         return output_keys

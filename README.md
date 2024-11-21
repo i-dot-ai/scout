@@ -1,8 +1,8 @@
 #  🔍 IPA scout
 
-> ⚠️ Incubation Project: This project is an incubation project; as such, we DON’T recommend using it in any critical use case. This project is in active development and a work in progress. 
-
-Scout automatically analyses new project documents w.r.t to IPA guidance and gate workbooks, flagging potential problems as soon as possible. This tool improves and expedites the work of assurance review teams.
+> ⚠️ Incubation Project: This project is an incubation project; as such, we encourage teams to evaluate its performance before applying it to their assurance process.
+> 
+Scout automatically analyses new project documents with respect to IPA guidance and gate workbooks, flagging potential problems as soon as possible. This tool improves and expedites the work of assurance review teams.
 
 There is a pipeline that ingests project documents, criteria, then uses an LLM to evaluate projects against the criteria. The project data, criteria and evaluation results are saved in a database. There is then an app that allows users to explore this data and identify potential issues with projects.
 
@@ -22,31 +22,11 @@ cd scout
 ```
 Make sure you have [poetry installed](https://python-poetry.org/docs/) for dependency management.
 
-Install packages: 
+Install dependencies and copy .env file: 
 ```
-poetry install --with dev
+make setup
 ```
-
-Set up pre-commit for linting, checking for secrets etc:
-```
-pre-commit install
-```
-
-Install `nltk` data:
-```
-poetry run python -c "import nltk; nltk.download('punkt_tab');nltk.download('averaged_perceptron_tagger_eng');nltk.download('averaged_perceptron_tagger_eng')"
-```
-
-Copy the `.env` file and add your environment variables e.g. API keys:
-```
-cp .env.example .env
-```
-
-You may need to install `poppler` (this is a reqirement for the `pdf2image` Python library): 
-```
-brew install poppler
-```
-(assuming you are using a Mac with Homebrew).
+This make command assumes you are using a Mac with Homebrew.
 
 Run using:
 ```
@@ -96,7 +76,7 @@ You may wish to use the example data in the `example_data` folder - this contain
 3. Make sure Python packages are installed: `poetry install`.
 4. Make sure your database, minio and libreoffice services are running: `docker compose up db minio libreoffice`.
 5. In the script, change your `project_directory_name`, `gate_review`, and `llm` to reflect your project (if you are using the example data, you won't need to change anything).
-6. Run the script (outside Docker): `poetry run python scripts/analyse_project.py` (this takes a few minutes with the example data).
+6. Run the script (outside Docker): `poetry run python scripts/analyse_project.py` (this takes a few minutes with the example data). The first time you run this script it will download an ML model used to process documents, this makes the first run particularly slow.
 7. View your results in the frontend - run the app in Docker `docker compose up` and go to http://localhost:3000.
 
 More detailed documentation can be found in `docs/analyse_projects.md`.

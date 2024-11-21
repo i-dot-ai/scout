@@ -8,7 +8,7 @@ from langchain_core.vectorstores import VectorStore
 from openai import APIConnectionError, APIError, OpenAI, RateLimitError
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
-from scout.DataIngest.models.schemas import Chunk, CriterionCreate, File, ProjectCreate, ResultCreate
+from scout.DataIngest.models.schemas import Chunk, CriterionCreate, File, ProjectCreate,ProjectUpdate, ResultCreate
 from scout.LLMFlag.prompts import (
     CORE_SCOUT_PERSONA,
     DOCUMENT_EXTRACT_PROMPT,
@@ -19,6 +19,7 @@ from scout.LLMFlag.prompts import (
     USER_EVIDENCE_POINTS_PROMPT,
     USER_QUESTION_PROMPT,
     USER_REGENERATE_HYPOTHESIS_PROMPT,
+    SUMMARIZE_RESPONSES_PROMPT
 )
 from scout.LLMFlag.retriever import ReRankRetriever
 from scout.utils.storage.storage_handler import BaseStorageHandler
@@ -49,6 +50,7 @@ class BaseEvaluator(ABC):
     def __init__(self):
         """Initialise the evaluator"""
         self.hypotheses = "None"
+        self.temp=0
 
     @abstractmethod
     def evaluate_question(self, criteria_uuid: str) -> List[str]:
@@ -112,6 +114,7 @@ class BaseEvaluator(ABC):
                     )
                     evidence_response = api_call_with_retry(
                         self.llm.chat.completions.create,
+                        temperature=self.temp,
                         model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
                         messages=[
                             {
@@ -139,6 +142,7 @@ class BaseEvaluator(ABC):
 
             question_response = api_call_with_retry(
                 self.llm.chat.completions.create,
+                temperature=self.temp,
                 model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
                 messages=[
                     {"role": "system", "content": SYSTEM_QUESTION_PROMPT},
@@ -161,6 +165,7 @@ class BaseEvaluator(ABC):
 
             hypotheses_response = api_call_with_retry(
                 self.llm.chat.completions.create,
+                temperature=0.5,
                 model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
                 messages=[
                     {"role": "system", "content": CORE_SCOUT_PERSONA},
@@ -199,7 +204,7 @@ class MainEvaluator(BaseEvaluator):
         storage_handler: BaseStorageHandler,
     ):
         """Initialise the evaluator"""
-        self.hypotheses = "None"
+        super().__init__()
         self.vector_store = vector_store
         self.llm = llm
         self.storage_handler = storage_handler
@@ -237,23 +242,23 @@ class MainEvaluator(BaseEvaluator):
         logger.info("Generating summary of answers...")
         # Generate summary of answers
         summary = self.generate_summary(question_answer_pairs)
-        self.project.results_summary = summary
-        self.storage_handler.update_item(self.project)
+        project_update=ProjectUpdate(id=self.project.id,name=self.project.name, results_summary=summary)
+        self.storage_handler.update_item(project_update)
         return results
 
     def generate_summary(self, question_answer_pairs: List[tuple]) -> str:
         """Generate a summary of the answers using an LLM, with an input prompt containing instructions."""
 
-        SUMMARIZE_RESPONSES_PROMPT = """You are a project delivery expert, you will be given question and answer pairs about a government project. Return a summary of the most important themes, you do not need to summarise all the questions, only return important, specific information. Be specific about project detail referred to. Return no more than 3 sentences. {qa_pairs}"""
-
+     
         formatted_input = ", ".join([f"Question: {qa[0]}\nAnswer: {qa[1]}" for qa in question_answer_pairs])
         response = api_call_with_retry(
             self.llm.chat.completions.create,
+            temperature=self.temp,
             model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
             messages=[
                 {
                     "role": "user",
-                    "content": SUMMARIZE_RESPONSES_PROMPT.format(qa_pairs=formatted_input),
+                    "content": SUMMARIZE_RESPONSES_PROMPT.format(qa_pairs=formatted_input,hypotheses=self.hypotheses),
                 },
             ],
         )
@@ -270,13 +275,14 @@ class MainEvaluator(BaseEvaluator):
                 k=k,
             )
 
-            extracted_words = re.findall(r"\b(positive|neutral|negative)\b", full_text, re.IGNORECASE)
+            # find any sentiment words that might be in square brackets
+            extracted_words = re.findall(r'\[?(positive|neutral|negative)\]?', full_text, re.IGNORECASE)
 
             if extracted_words:
                 answer = extracted_words[-1].title()
                 # Remove the key words and brackets from full_text
                 full_text = re.sub(
-                    r"\b(positive|neutral|negative)\b",
+                    r'\[?(positive|neutral|negative)\]?',
                     "",
                     full_text,
                     flags=re.IGNORECASE,

@@ -275,13 +275,14 @@ class MainEvaluator(BaseEvaluator):
                 k=k,
             )
 
-            extracted_words = re.findall(r"\b(positive|neutral|negative)\b", full_text, re.IGNORECASE)
+            # find any sentiment words that might be in square brackets
+            extracted_words = re.findall(r'\[?(positive|neutral|negative)\]?', full_text, re.IGNORECASE)
 
             if extracted_words:
                 answer = extracted_words[-1].title()
                 # Remove the key words and brackets from full_text
                 full_text = re.sub(
-                    r"\b(positive|neutral|negative)\b",
+                    r'\[?(positive|neutral|negative)\]?',
                     "",
                     full_text,
                     flags=re.IGNORECASE,

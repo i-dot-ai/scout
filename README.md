@@ -69,7 +69,7 @@ This is where you will create folders with your project documents, and folders f
 
 There is an example script in `scripts/analyse_project.py` - follow the instructions below to run the pipeline.
 
-You may wish to use the example data in the `example_data` folder - this contains example project data and criteria.
+You may wish to use the example data in the `example_data` folder - this contains example project data, full criteria extracted from IPA stage gate workbooks, and some example criteria for testing.
 
 1. Save your project data in a folder within `.data` - the name of the folder is the project name (e.g. `example_project`).
 2. Save the criteria CSVs in `.data` (e.g. in a folder called `criteria`).

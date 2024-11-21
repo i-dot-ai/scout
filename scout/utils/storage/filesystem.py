@@ -9,7 +9,6 @@ from botocore.exceptions import ClientError
 from botocore.exceptions import NoCredentialsError
 from botocore.exceptions import PartialCredentialsError
 from dotenv import load_dotenv
-from pydantic import ValidationError
 from yarl import URL
 
 from scout.DataIngest.models.schemas import FileCreate as File

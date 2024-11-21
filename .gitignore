@@ -7,6 +7,10 @@
 *.ppt
 *.pdf
 *.docx
+!example_data/**/*.pptx
+!example_data/**/*.ppt
+!example_data/**/*.pdf
+!example_data/**/*.docx
 libreoffice_config/
 .dump
 .data

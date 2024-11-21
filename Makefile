@@ -18,10 +18,10 @@ setup: install ## Complete setup including pre-commit hooks and NLTK data
 	
 
 alembic-upgrade:
-	alembic upgrade head
+	poetry run alembic upgrade head
 
 alembic-revision:
-	alembic revision --autogenerate
+	poetry run alembic revision --autogenerate
 
 # Resetting system to make testing easier --------------
 # Make sure you have psql installed through brew `brew install postgresql`

@@ -113,13 +113,11 @@ const Summary: React.FC = () => {
                         <p>
                             Scout helps you navigate your document set before your review. Please check the details below are correct before continuing.
                             <ul>
-                                <strong>Review Type:</strong> {reviewType} <br />
-                                <strong>Project Name:</strong> {projectDetails.name ? getBaseName(projectDetails.name) : projectDetails.name}
+                                <strong>Project Name:</strong> {projectDetails.name ? getBaseName(projectDetails.name) : projectDetails.name}<br />
+                                <strong>Review Type:</strong> {reviewType} 
+                            
                             </ul>
-                            This tool has preprocessed your documents and analysed them against the questions in the 
-                            <a href={gateUrl} target="_blank" rel="noopener noreferrer">
-                                {reviewType} workbook
-                            </a>.
+                            This tool has preprocessed your documents and analysed them against the questions in the {reviewType} workbook.
                         </p>
                     </div>
                 </div>

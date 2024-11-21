@@ -113,11 +113,11 @@ const Summary: React.FC = () => {
                         <p>
                             Scout helps you navigate your document set before your review. Please check the details below are correct before continuing.
                             <ul>
-                                <strong>Project Name:</strong> {projectDetails.name ? getBaseName(projectDetails.name) : projectDetails.name}<br />
-                                <strong>Review Type:</strong> {reviewType} 
+                                Project Name:<strong> {projectDetails.name ? getBaseName(projectDetails.name) : projectDetails.name}</strong><br />
+                                Review Type:<strong> {reviewType} </strong>
                             
                             </ul>
-                            This tool has preprocessed your documents and analysed them against the questions in the {reviewType} workbook.
+                            This tool has preprocessed your documents and analysed them against the questions in the {reviewType} workbook. Head to the Results tab to see analysis for each criterion in the gate workbook, click on the links to files to see what evidence has been used to form that conclusion.
                         </p>
                     </div>
                 </div>
@@ -125,19 +125,13 @@ const Summary: React.FC = () => {
 
             <div className="summary-card" style={{ display: 'flex', alignItems: 'top', marginBottom: '20px' }}>
                 <div style={{ flex: 1 }}>
-                    <h2>Review Summary</h2>
-                    <p>{summaryText}</p>
+                    <h2>Overview</h2>
+                    <div dangerouslySetInnerHTML={{ __html: summaryText }} />
                 </div>
                 <div className="chart-container" style={{ flex: 1 }}>
                     <PieChart data={chartData} labels={chartLabels} />
                 </div>
             </div>
-            {Object.keys(categories).map(category => (
-                <div className="summary-card" key={category} style={{ marginBottom: '20px' }}>
-                    <h2>{category}</h2>
-                    <p>{`Number of negative results: ${categories[category]}`}</p>
-                </div>
-            ))}
         </div>
     );
 };

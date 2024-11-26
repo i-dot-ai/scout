@@ -1,4 +1,8 @@
 import time
+
+from typing import Any
+from typing import Mapping
+from bertopic import BERTopic
 from tqdm import tqdm
 
 class TopicModel:

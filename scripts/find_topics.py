@@ -13,7 +13,9 @@ from langchain_openai import AzureOpenAIEmbeddings
 from scout.utils.storage.postgres_storage_handler import PostgresStorageHandler
 from scout.TopicModelling.utils import load_topic_chunks
 from scout.TopicModelling.utils import generate_default_stack
+from scout.TopicModelling.utils import save_outputs
 from scout.TopicModelling.topic_model import TopicModel
+from scout.TopicModelling.topic_model import TopicModelSpecCreate as TopicModelSpec
 
 load_dotenv()
 
@@ -49,4 +51,28 @@ if __name__ == "__main__":
     t_model.embedd_chunks(chunk_embedder)
 
     # Build stack
-    bert_stack = generate_default_stack()
+    bert_stack = generate_default_stack(chunk_embedder, representation_llm)
+
+    # Hyperparameters - tune to specific case 
+    model_parameters = {
+        "min_topic_size": 10,
+        "calculate_probabilities": True,
+        "verbose": True,
+    }
+
+    t_model.create_model(params=model_parameters, bert_stack=bert_stack)
+
+    print("Training model...")
+    t_model.fit()
+
+    # CReate project to save here
+    t_model.model_spec = TopicModelSpec(
+        name=t_model.model_name,
+        num_docs=t_model.result.get("num_docs"),
+        computation_time=t_model.result.get("computation_time"),
+        num_topics=t_model.result.get("num_topics"),
+    )
+    t_model.model_spec = storage_handler.write_item(t_model.model_spec)
+
+    print("Saving outputs...")
+    save_outputs(t_model, storage_handler)

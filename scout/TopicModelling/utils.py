@@ -1,4 +1,6 @@
 
+import os
+
 from bertopic.backend import OpenAIBackend
 from bertopic.representation import KeyBERTInspired
 from bertopic.representation import OpenAI
@@ -97,3 +99,15 @@ def generate_default_stack(embedding_model, representation_llm):
     }
 
     return model_stack
+
+def save_outputs(topic_model, storage_handler, evaluation_metrics=None):
+    # Extract information from topic model
+    topic_outputs = topic_model.outputs()
+
+    try:
+        print("Adding topics")
+        topics = storage_handler.write_items(topic_outputs)  # Save topics
+    except Exception as _:
+        print("Failed to add topics")
+
+    return None

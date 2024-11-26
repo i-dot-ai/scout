@@ -12,6 +12,7 @@ from umap import UMAP
 from scout.DataIngest.models.schemas import ProjectFilter
 from scout.DataIngest.models.schemas import ChunkFilter
 from scout.utils.storage.postgres_storage_handler import PostgresStorageHandler
+from scout.TopicModelling.representation_prompts import summarization_prompt, primary_theme_prompt
 
 def load_topic_chunks(project_name: str, storage_handler: PostgresStorageHandler):
     """ Load topic chunks for modelling

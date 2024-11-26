@@ -1,5 +1,6 @@
 import time
 
+import numpy as np
 from typing import Any
 from typing import Mapping
 from bertopic import BERTopic

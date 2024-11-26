@@ -3,6 +3,7 @@ from enum import Enum
 from typing import List, Optional
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, Extra
+from scout.DataIngest.models.schemas import ChunkBase
 
 
 global_model_config = ConfigDict(

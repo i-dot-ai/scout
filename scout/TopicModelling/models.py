@@ -96,3 +96,34 @@ class TopicFilter(BaseModel):
 
 class Topic(TopicBase):
     topic_model: Optional["TopicModelSpecBase"] = None
+
+
+class ChunkTopicJoinBase(BaseModel):
+    # Allows pydantic/sqlalchemy to use ORM to pull out related objects instead of just references to them
+    model_config = global_model_config
+
+    chunk_id: UUID
+    topic_id: UUID
+    relevance_score: float
+    created_datetime: datetime
+    updated_datetime: Optional[datetime]
+
+
+class ChunkTopicJoinCreate(BaseModel):
+    chunk_id: UUID
+    topic_id: UUID
+    relevance_score: float
+
+
+class ChunkTopicJoinUpdate(ChunkTopicJoinCreate):
+    id: UUID
+
+
+class ChunkTopicJoinFilter(BaseModel):
+    chunk_id: Optional[UUID] = None
+    topic_id: Optional[UUID] = None
+
+
+class ChunkTopicJoin(ChunkTopicJoinBase):
+    topics: Optional[list["TopicBase"]] = Field(default_factory=list)
+

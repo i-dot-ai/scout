@@ -5,9 +5,9 @@ from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-TopicBase = declarative_base()
+TopicSchemaBase = declarative_base()
 
-class TopicModelSpec(TopicBase):
+class TopicModelSpec(TopicSchemaBase):
     __tablename__ = "topic_model"
     __table_args__ = {"schema": "topic_modelling"}
 
@@ -22,7 +22,7 @@ class TopicModelSpec(TopicBase):
     topics = relationship("Topic", back_populates="topic_model")
 
 
-class Topic(TopicBase):
+class Topic(TopicSchemaBase):
     __tablename__ = "topics"
     __table_args__ = {"schema": "topic_modelling"}
 
@@ -41,7 +41,7 @@ class Topic(TopicBase):
 
     chunk_associations = relationship("ChunkTopicJoin", back_populates="topic")
 
-class ChunkTopicJoin(TopicBase):
+class ChunkTopicJoin(TopicSchemaBase):
     __tablename__ = 'chunk_topic_associations'
     __table_args__ = {'schema': 'topic_modelling'}
 

@@ -24,11 +24,16 @@ class TopicModel:
     def embedd_chunks(
         self,
         embedder,
+        embedding_model,
     ):
         self.embeddings = []
 
+        # for chunk in tqdm(self.text, desc="Embedding chunks..."):
+        #     self.embeddings.append((embedder.embed_query(chunk)))
+
         for chunk in tqdm(self.text, desc="Embedding chunks..."):
-            self.embeddings.append((embedder.embed_query(chunk)))
+            self.embeddings.append(embedder.embeddings.create(input=chunk, model=embedding_model).data[0].embedding)
+            
 
         self.embeddings = np.array(self.embeddings)
 

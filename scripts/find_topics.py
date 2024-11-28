@@ -8,14 +8,13 @@ import os
 
 from dotenv import load_dotenv
 from openai import AzureOpenAI
-from langchain_openai import AzureOpenAIEmbeddings
 
 from scout.utils.storage.postgres_storage_handler import PostgresStorageHandler
 from scout.TopicModelling.utils import load_topic_chunks
 from scout.TopicModelling.utils import generate_default_stack
 from scout.TopicModelling.utils import save_outputs
 from scout.TopicModelling.topic_model import TopicModel
-from scout.TopicModelling.topic_model import TopicModelSpecCreate as TopicModelSpec
+from scout.TopicModelling.models import TopicModelSpecCreate as TopicModelSpec
 
 load_dotenv()
 
@@ -30,12 +29,13 @@ if __name__ == "__main__":
         azure_deployment=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME"),
     )  # Chosen LLM for evaluation of project against the criteria
 
-    chunk_embedder = AzureOpenAIEmbeddings(
+    embedding_client = AzureOpenAI(
         azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
         api_key=os.getenv("AZURE_OPENAI_KEY"),
-        api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-        azure_deployment="text-embedding-3-large",
+        api_version=os.getenv("AZURE_OPENAI_API_VERSION")
     ) # Sets up the embedder to embed the chunks for topic modelling
+
+    embedding_model = "text-embedding-3-large"
 
     storage_handler = PostgresStorageHandler()
 
@@ -48,10 +48,10 @@ if __name__ == "__main__":
         model_name=model_name
     )
 
-    t_model.embedd_chunks(chunk_embedder)
+    t_model.embedd_chunks(embedding_client, embedding_model=embedding_model)
 
     # Build stack
-    bert_stack = generate_default_stack(chunk_embedder, representation_llm)
+    bert_stack = generate_default_stack(embedding_model, embedding_client, representation_llm)
 
     # Hyperparameters - tune to specific case 
     model_parameters = {

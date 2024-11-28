@@ -30,7 +30,7 @@ def load_topic_chunks(project_name: str, storage_handler: PostgresStorageHandler
 
     return chunks
 
-def generate_default_stack(embedding_model, representation_llm):
+def generate_default_stack(embedding_model, embedding_client, representation_llm):
     """Build the BERTStack for the model. This can be refactored to be customised ast a later date
     Effectively, the process is:
     1. Select the embedding model (based on the one used in the chunker)
@@ -42,7 +42,7 @@ def generate_default_stack(embedding_model, representation_llm):
     """
 
     embedding_model = OpenAIBackend(
-        representation_llm, embedding_model, batch_size=500, delay_in_seconds=0.5
+        embedding_client, embedding_model, batch_size=500, delay_in_seconds=0.5
     )  # Select open ai model change as appropriate
 
     umap_model = UMAP(

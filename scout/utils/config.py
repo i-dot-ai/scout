@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     MINIO_SECRET_KEY: Optional[str] = None
     PATH_TO_DATA: Optional[str] = None
     POSTGRES_HOST: str
-    POSTGRES_PORT: int
+    POSTGRES_PORT: str
     POSTGRES_DB: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
